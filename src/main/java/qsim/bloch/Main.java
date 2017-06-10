@@ -1,4 +1,4 @@
-package poc.bloch;
+package qsim.bloch;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -14,7 +14,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
-public class SampleApp extends Application {
+public class Main extends Application {
     private double mousePosX, mousePosY = 0;
     private Sphere sphere;
     private Scene scene;
@@ -32,14 +32,14 @@ public class SampleApp extends Application {
         camera.getTransforms().addAll(
                 new Rotate(-20, Rotate.Y_AXIS),
                 new Rotate(-20, Rotate.X_AXIS),
-                new Translate(0, 0, -50));
+                new Translate(0, 0, -80));
 
         // group all three axes into one object
         Group axesGroup = new Group();
         axesGroup.getChildren().add(camera);
-        Cylinder z = BlochFactory.buildAxis(.2, 20, Color.GRAY, null);
-        Cylinder y = BlochFactory.buildAxis(.2, 20, Color.GREEN, Rotate.X_AXIS);
-        Cylinder x = BlochFactory.buildAxis(.2, 20, Color.BLUE, Rotate.Z_AXIS);
+        Group z = BlochFactory.buildAxis(40, Color.GRAY, null, "Z");
+        Group y = BlochFactory.buildAxis(40, Color.GREEN, Rotate.X_AXIS, "Y");
+        Group x = BlochFactory.buildAxis(40, Color.BLUE, Rotate.Z_AXIS, "X");
 
         axes.getChildren().addAll(x, y, z);
         axes.getTransforms().addAll(rotateZ, rotateY, rotateX);
@@ -47,7 +47,7 @@ public class SampleApp extends Application {
         axesGroup.getChildren().add(axes);
         axesGroup.getChildren().add(sphere);
 
-        SubScene subScene = new SubScene(axesGroup, 600, 600, true,
+        SubScene subScene = new SubScene(axesGroup, 1024, 1024, true,
                 SceneAntialiasing.BALANCED);
         subScene.setFill(Color.TRANSPARENT);
         subScene.setCamera(camera);
