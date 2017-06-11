@@ -9,10 +9,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.DrawMode;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -28,20 +25,45 @@ public class BlochFactory {
     private static double w = .005;
     private static double l = 1;
 
+    private static double r = 10;
+
+    /**
+     * Set the scale factor for every object to be created
+     * @param sphereRadius
+     * @param axesScaleFactor
+     */
+    public static void initBlochSphere(double sphereRadius, double axesScaleFactor) {
+        BlochFactory.r = sphereRadius;
+        BlochFactory.l = 2 * axesScaleFactor;
+    }
+
+    /**
+     * Builds the standard Z, X and Y axes for the bloch sphere
+     * @return
+     */
+    public static Group buildStandardAxes() {
+        Group axesGroup = new Group();
+        Group z = BlochFactory.buildAxis(Color.GRAY, null, "Z");
+        Group y = BlochFactory.buildAxis(Color.GREEN, Rotate.X_AXIS, "Y");
+        Group x = BlochFactory.buildAxis(Color.BLUE, Rotate.Z_AXIS, "X");
+
+        axesGroup.getChildren().addAll(z, x, y);
+        return axesGroup;
+    }
+
     /**
      * Returns an object encapsulating an axis
-     * @param size
      * @param color
      * @param axis
      * @return
      */
-    public static Group buildAxis(double size, Color color, Point3D axis, String label) throws IOException {
-        double width = w*size, length = l*size;
+    public static Group buildAxis(Color color, Point3D axis, String label) {
+        double length = l*r, width = w*length;
         Group vector = new Group();
 
         // label
         Text text = new Text(label);
-        text.setFont(Font.font ("Verdana", 50));
+        text.setFont(Font.font ("Arial", 5));
         text.setFill(color);
         text.setTranslateY(-length/4);
 
@@ -51,11 +73,41 @@ public class BlochFactory {
         material.setDiffuseColor(color);
         ax.setMaterial(material);
 
+        // rotation over base axis
+        if (axis!=null) {
+            Rotate rotation = new Rotate();
+            rotation.setAxis(axis);
+            rotation.setAngle(90);
+            vector.getTransforms().add(rotation);
+        }
+
+        vector.getChildren().addAll(ax, text);
+        return vector;
+    }
+
+    /**
+     * Builds a new state vector pointing along some axis
+     * @param color
+     * @param axis
+     * @return
+     */
+    public static Group buildState(Color color, Point3D axis) {
+        Group vector = new Group();
+        double length = r, width = w*length*3;
+
+        // axis
+        Cylinder ax = new Cylinder(width, length);
+        PhongMaterial material = new PhongMaterial();
+        material.setDiffuseColor(color);
+        ax.setMaterial(material);
+        ax.setTranslateY(-length/2);
+
         // pointer
         MeshView pointer = buildPointer();
-        pointer.setTranslateY(-length/2);
+        pointer.setTranslateY(-length);
         pointer.setMaterial(material);
 
+        // rotation over base axis
         if (axis!=null) {
             Rotate rotation = new Rotate();
             rotation.setAxis(axis);
@@ -67,16 +119,31 @@ public class BlochFactory {
         return vector;
     }
 
+    /**
+     * Builds a semi-transparent bloch sphere with the specified radius by the factory initializer
+     * @return
+     */
+    public static Sphere buildBlochSphere() {
+        Sphere bloch = new Sphere(r);
+        bloch.setDrawMode(DrawMode.LINE);
+
+        return bloch;
+    }
 
     /**
      * Axis arrow builder
      * @return
      * @throws IOException
      */
-    public static MeshView buildPointer() throws IOException {
+    public static MeshView buildPointer() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(BlochFactory.class.getResource("/pyramid.fxml"));
-        MeshView pyramidModel = fxmlLoader.<MeshView>load();
+        MeshView pyramidModel = null;
+        try {
+            pyramidModel = fxmlLoader.<MeshView>load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return pyramidModel;
     }
 }
