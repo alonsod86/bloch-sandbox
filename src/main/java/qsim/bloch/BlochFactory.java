@@ -3,10 +3,6 @@ package qsim.bloch;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Tooltip;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
@@ -32,7 +28,7 @@ public class BlochFactory {
      * @param sphereRadius
      * @param axesScaleFactor
      */
-    public static void initBlochSphere(double sphereRadius, double axesScaleFactor) {
+    public static void initialize(double sphereRadius, double axesScaleFactor) {
         BlochFactory.r = sphereRadius;
         BlochFactory.l = 2 * axesScaleFactor;
     }
@@ -52,7 +48,7 @@ public class BlochFactory {
     }
 
     /**
-     * Returns an object encapsulating an axis
+     * Returns an object encapsulating an axis (basis vector + label)
      * @param color
      * @param axis
      * @return
@@ -74,12 +70,7 @@ public class BlochFactory {
         ax.setMaterial(material);
 
         // rotation over base axis
-        if (axis!=null) {
-            Rotate rotation = new Rotate();
-            rotation.setAxis(axis);
-            rotation.setAngle(90);
-            vector.getTransforms().add(rotation);
-        }
+        applyOrthogonalTransformation(axis, vector);
 
         vector.getChildren().addAll(ax, text);
         return vector;
@@ -108,13 +99,7 @@ public class BlochFactory {
         pointer.setMaterial(material);
 
         // rotation over base axis
-        if (axis!=null) {
-            Rotate rotation = new Rotate();
-            rotation.setAxis(axis);
-            rotation.setAngle(90);
-            vector.getTransforms().add(rotation);
-        }
-
+        applyOrthogonalTransformation(axis, vector);
         vector.getChildren().addAll(ax, pointer);
         return vector;
     }
@@ -123,10 +108,9 @@ public class BlochFactory {
      * Builds a semi-transparent bloch sphere with the specified radius by the factory initializer
      * @return
      */
-    public static Sphere buildBlochSphere() {
+    public static Sphere buildSphere() {
         Sphere bloch = new Sphere(r);
         bloch.setDrawMode(DrawMode.LINE);
-
         return bloch;
     }
 
@@ -135,7 +119,7 @@ public class BlochFactory {
      * @return
      * @throws IOException
      */
-    public static MeshView buildPointer() {
+    private static MeshView buildPointer() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(BlochFactory.class.getResource("/pyramid.fxml"));
         MeshView pyramidModel = null;
@@ -145,5 +129,19 @@ public class BlochFactory {
             e.printStackTrace();
         }
         return pyramidModel;
+    }
+
+    /**
+     * Given a vector, applies a specific rotation to build an orthogonal final state
+     * @param axis
+     * @param vector
+     */
+    private static void applyOrthogonalTransformation(Point3D axis, Group vector) {
+        if (axis!=null) {
+            Rotate rotation = new Rotate();
+            rotation.setAxis(axis);
+            rotation.setAngle(90);
+            vector.getTransforms().add(rotation);
+        }
     }
 }

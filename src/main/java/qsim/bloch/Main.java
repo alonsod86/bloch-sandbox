@@ -2,22 +2,16 @@ package qsim.bloch;
 
 import javafx.application.Application;
 import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import qsim.bloch.core.Transformations;
 import qsim.bloch.ui.UI;
 
 public class Main extends Application {
 
     private UI ui;
+    private Group stateVector;
 
     public Main() {
         this.ui = new UI();
@@ -29,7 +23,7 @@ public class Main extends Application {
         Sphere sphere;
 
         // build sphere and standard Z, X, Y axes
-        sphere = BlochFactory.buildBlochSphere();
+        sphere = BlochFactory.buildSphere();
         axes = BlochFactory.buildStandardAxes();
 
         // apply mouse driven transformations
@@ -37,7 +31,9 @@ public class Main extends Application {
         sphere.getTransforms().addAll(ui.getRotationAxes());
 
         // create state vector |0>
-        Group stateVector = BlochFactory.buildState(Color.RED, null);
+        stateVector = BlochFactory.buildState(Color.RED, null);
+        stateVector.getTransforms().addAll(ui.getRotationAxes());
+
         all.getChildren().addAll(sphere, axes, stateVector);
         return all;
     }
@@ -47,8 +43,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         double sceneSize = 10;
 
-        BlochFactory.initBlochSphere(sceneSize, 1.3);
+        BlochFactory.initialize(sceneSize, 1.3);
         ui.start(primaryStage, createContent(), sceneSize);
+
+        Transformations.xGate(stateVector);
     }
 
     public static void main(String[] args) {
