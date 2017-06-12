@@ -5,7 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
-import qsim.bloch.core.Transformations;
+import qsim.bloch.core.gates.X;
 import qsim.bloch.ui.UI;
 
 public class Main extends Application {
@@ -22,7 +22,7 @@ public class Main extends Application {
         Group axes;
         Sphere sphere;
 
-        // build sphere and standard Z, X, Y axes
+        // build sphere and standard Z, PauliOperator, Y axes
         sphere = BlochFactory.buildSphere();
         axes = BlochFactory.buildStandardAxes();
 
@@ -31,7 +31,7 @@ public class Main extends Application {
         sphere.getTransforms().addAll(ui.getRotationAxes());
 
         // create state vector |0>
-        stateVector = BlochFactory.buildState(Color.RED, null);
+        stateVector = BlochFactory.buildStateVector(Color.RED, null);
         stateVector.getTransforms().addAll(ui.getRotationAxes());
 
         all.getChildren().addAll(sphere, axes, stateVector);
@@ -46,7 +46,9 @@ public class Main extends Application {
         BlochFactory.initialize(sceneSize, 1.3);
         ui.start(primaryStage, createContent(), sceneSize);
 
-        Transformations.xGate(stateVector);
+        X xg = new X();
+
+
     }
 
     public static void main(String[] args) {

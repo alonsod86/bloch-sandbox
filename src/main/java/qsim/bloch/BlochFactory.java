@@ -34,7 +34,7 @@ public class BlochFactory {
     }
 
     /**
-     * Builds the standard Z, X and Y axes for the bloch sphere
+     * Builds the standard Z, PauliOperator and Y axes for the bloch sphere
      * @return
      */
     public static Group buildStandardAxes() {
@@ -82,7 +82,7 @@ public class BlochFactory {
      * @param axis
      * @return
      */
-    public static Group buildState(Color color, Point3D axis) {
+    public static Group buildStateVector(Color color, Point3D axis) {
         Group vector = new Group();
         double length = r, width = w*length*3;
 
